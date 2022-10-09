@@ -1,12 +1,12 @@
 #去申请 https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
 wx:
   config:
-    appId: ""
-    appSecret: ""
+    appId: "wxeb12a59a8f5f9994"
+    appSecret: "5e5d8435349dbb3cc1c8a032a2ee4e9b"
     #模板Id
-    templateId: ""
+    templateId: "EnoqipWluOW9Zb3hDHnBDjwajj9pOD_TO_i_oTVqfPY"
     openidList:
-      - ""
+      - "oFSjX6CpEKXYazPYshl3LHRtkGRQ"
 #      - ""
 
 message:
@@ -19,13 +19,13 @@ message:
 #去申请 https://tianqiapi.com/user/login
 weather:
   config:
-    appid: ""
-    appSecret: ""
-    city: "广州"
+    appid: "77297475"
+    appSecret: "hLSLo5JA"
+    city: "北京"
 #注册并购买第二档次，有券，直接白嫖 https://www.apispace.com/eolink/api/myjj/introduction
 ApiSpace:
   enableDaily: true #【新增功能】  true：开启每日一句，false：则不开启
-  token: ""
+  token: "4qq7kpq3kbjh38ynswh4hlekzla39983"
 
 server:
   port: 8081

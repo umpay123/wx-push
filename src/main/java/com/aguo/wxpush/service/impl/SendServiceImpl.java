@@ -9,6 +9,7 @@ import com.aguo.wxpush.utils.DateUtil;
 import com.aguo.wxpush.utils.HttpUtil;
 import com.aguo.wxpush.utils.JsonObjectUtil;
 import com.aguo.wxpush.utils.MessageUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class SendServiceImpl implements SendService {
         String grant_type = "client_credential";
         //封装请求数据
         String params = "grant_type=" + grant_type + "&secret=" + configConstant.getAppSecret() + "&appid=" + configConstant.getAppId();
+//        logger.info("请求微信参数" +  params);
         //发送GET请求
         String sendGet = HttpUtil.sendGet("https://api.weixin.qq.com/cgi-bin/token", params);
         // 解析相应内容（转换成json对象）
@@ -65,8 +67,11 @@ public class SendServiceImpl implements SendService {
         }
         List<JSONObject> errorList = new ArrayList();
         HashMap<String, Object> resultMap = new HashMap<>();
+        //获取关注的用户id
+        List<String> openids = getOpenIds(accessToken,"");
         //遍历用户的ID，保证每个用户都收到推送
-        for (String opedId : configConstant.getOpenidList()) {
+        //configConstant.getOpenidList()
+        for (String opedId : openids) {
 
             //今天
             String date = DateUtil.formatDate(new Date(), "yyyy-MM-dd");
@@ -198,6 +203,21 @@ public class SendServiceImpl implements SendService {
         }
     }
 
+    private List<String> getOpenIds(String accessToken,String next_openid ) {
+        JSONObject templateMsg = new JSONObject(new LinkedHashMap<>());
+        List<String> list = new ArrayList<>();
+        String url = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + accessToken +"&next_openid="+next_openid;
+        String sendPost = HttpUtil.sendPost(url, templateMsg.toJSONString());
+        JSONObject WeChatMsgResult = JSONObject.parseObject(sendPost);
+        if (!"0".equals(WeChatMsgResult.getString("errcode"))) {
+             String jsonstr =  WeChatMsgResult.getString("data");
+            JSONObject WeChatMsgResult1 = JSONObject.parseObject(jsonstr);
+            JSONArray jsonArray = WeChatMsgResult1.getJSONArray("openid");
+            list = JSONObject.parseArray(jsonArray.toJSONString(),String.class);
+        }
+        return list;
+    }
+
     private JSONObject togetherDay(String date) {
         //在一起时间
         String togetherDay = "";
@@ -248,5 +268,19 @@ public class SendServiceImpl implements SendService {
             textMessage.setContent("目前仅支持文本呦");
         }
         return textMessage.getContent();
+    }
+    //创建菜单
+    @Override
+    public String menu() {
+        String message = "失败";
+        String accessToken = getAccessToken();
+        String url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + accessToken;
+        String menu = "{\"button\":[{\"type\":\"click\",\"name\":\"今日歌曲\",\"key\":\"V1001_TODAY_MUSIC\"},{\"name\":\"菜单\",\"sub_button\":[{\"type\":\"view\",\"name\":\"新片速递\",\"url\":\"http://www.soso.com/\"},{\"type\":\"miniprogram\",\"name\":\"在线看片\",\"url\":\"http://mp.weixin.qq.com\",\"appid\":\"wx286b93c14bbf93aa\",\"pagepath\":\"pages/lunar/index\"},{\"type\":\"click\",\"name\":\"赞一下我们\",\"key\":\"V1001_GOOD\"}]}]}";
+        String sendPost = HttpUtil.sendPost(url,menu );
+        JSONObject WeChatMsgResult = JSONObject.parseObject(sendPost);
+        if (!"0".equals(WeChatMsgResult.getString("errcode"))) {
+            message ="成功" ;
+        }
+        return message;
     }
 }

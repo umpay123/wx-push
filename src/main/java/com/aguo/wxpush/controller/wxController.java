@@ -44,7 +44,17 @@ public class wxController {
         return json.toJSONString();
     }
 
-
+    @RequestMapping("/menu")
+    public String menu() {
+        try {
+            return sendService.menu();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject json = new JSONObject();
+        json.put("msg", "设置菜单失败");
+        return json.toJSONString();
+    }
 
     @RequestMapping("/changeConfig")
     public void changeConfig(String city,String time, HttpServletResponse response) throws IOException {

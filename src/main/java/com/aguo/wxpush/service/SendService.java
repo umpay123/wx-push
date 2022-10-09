@@ -11,4 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface SendService {
     String sendWeChatMsg();
     String messageHandle(HttpServletRequest request, HttpServletResponse response);
+
+    String menu();
 }
